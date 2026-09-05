@@ -1,0 +1,17 @@
+family: policy
+version: v0.1.0
+ontology_version: v0.1.0
+proposed_by: Astra
+proposal_origin: ai
+approval_state: proposed
+records:
+- dataset: documents
+  entity: Policy
+  source_id: id
+  fields:
+    id: id
+    created: created
+    owner: owner
+    status: status
+    related: related
+    body: body

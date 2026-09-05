@@ -1,0 +1,29 @@
+family: crm
+version: v0.1.0
+ontology_version: v0.1.0
+proposed_by: Astra
+proposal_origin: ai
+approval_state: proposed
+records:
+- dataset: customers
+  entity: Customer
+  source_id: id
+  fields:
+    id: id
+    account_id: client_id
+    name: name
+    email: email
+    access: access
+- dataset: customers
+  entity: Account
+  source_id: id
+  fields:
+    id: client_id
+- dataset: opportunities
+  entity: Opportunity
+  source_id: id
+  fields:
+    id: id
+    customer_id: customer_id
+    description: description
+    amount: amount

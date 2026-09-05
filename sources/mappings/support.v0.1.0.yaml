@@ -1,0 +1,18 @@
+family: support
+version: v0.1.0
+ontology_version: v0.1.0
+proposed_by: Astra
+proposal_origin: ai
+approval_state: proposed
+records:
+- dataset: tickets
+  entity: Ticket
+  source_id: id
+  fields:
+    id: id
+    customer_id: customer_id
+    status: status
+    invoice_id: invoice_id
+    reported_due_at: reported_due_at
+    subject: subject
+  observation_field: snapshot_at

@@ -2,16 +2,17 @@
 name = "stillroom-lab"
 version = "0.0.1"
 requires-python = ">=3.11,<3.12"
-dependencies = ["Faker==37.6.0"]
+dependencies = ["Faker==37.6.0", "PyYAML==6.0.2", "pydantic==2.11.9", "fastapi==0.116.2", "psycopg[binary]==3.2.10"]
 
 [dependency-groups]
-dev = ["pytest==8.4.2", "mypy==1.18.2", "PyYAML==6.0.2", "types-PyYAML==6.0.12.20250915"]
+dev = ["pytest==8.4.2", "mypy==1.18.2", "PyYAML==6.0.2", "types-PyYAML==6.0.12.20250915", "httpx==0.28.1"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "--basetemp=.pytest-tmp"
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["sources", "tests"]
+files = ["sources", "services", "tests"]

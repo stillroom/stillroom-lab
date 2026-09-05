@@ -2,7 +2,7 @@
 import json
 import subprocess
 
-from test_seed import ROOT
+from test_seed import REPO_ROOT as ROOT
 
 
 def docker(*args: str) -> str:

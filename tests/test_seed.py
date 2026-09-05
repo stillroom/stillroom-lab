@@ -2,12 +2,21 @@
 from pathlib import Path
 import sqlite3
 import subprocess
+import shutil
 
-ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[1]
+# Preserve the original seed-CLI assertions without touching runtime inputs.
+ROOT = REPO_ROOT / ".tmp/source-regression"
 DATA = ROOT / "sources" / "generated"
 
 
 def seed() -> None:
+    (ROOT / "sources").mkdir(parents=True, exist_ok=True)
+    for relative in ("Makefile", "pyproject.toml", "uv.lock", "sources/seed.py", "sources/MESSINESS.md"):
+        shutil.copyfile(REPO_ROOT / relative, ROOT / relative)
+    environment = ROOT / ".venv"
+    if not environment.is_symlink():
+        environment.symlink_to(REPO_ROOT / ".venv", target_is_directory=True)
     subprocess.run(["make", "seed"], cwd=ROOT, check=True)
 
 

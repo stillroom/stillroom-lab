@@ -1,0 +1,17 @@
+family: email
+version: v0.1.0
+ontology_version: v0.1.0
+proposed_by: Astra
+proposal_origin: ai
+approval_state: proposed
+records:
+- dataset: messages
+  entity: Communication
+  source_id: Message-ID
+  fields:
+    id: Message-ID
+    sender: From
+    subject: Subject
+    customer_id: Customer-ID
+    sent_at: Date
+    body: body

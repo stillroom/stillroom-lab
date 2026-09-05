@@ -1,0 +1,25 @@
+family: billing
+version: v0.1.0
+ontology_version: v0.1.0
+proposed_by: Astra
+proposal_origin: ai
+approval_state: proposed
+records:
+- dataset: invoices
+  entity: Invoice
+  source_id: id
+  fields:
+    id: id
+    customer_id: customer_id
+    amount: amount
+    issued_at: issued_at
+    due_at: due_at
+- dataset: payments
+  entity: Payment
+  source_id: id
+  fields:
+    id: id
+    invoice_id: invoice_id
+    amount: amount
+    paid_at: paid_at
+    kind: kind
