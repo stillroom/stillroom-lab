@@ -1,0 +1,11 @@
+.venv/
+.cache/
+.tmp/
+.pytest_cache/
+.pytest-tmp/
+.mypy_cache/
+__pycache__/
+*.pyc
+sources/generated/
+output-workspace/*
+!output-workspace/README.md

@@ -1,0 +1,28 @@
+name: stillroom-lab
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab-scratch-only
+      POSTGRES_DB: lab
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab -d lab"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+
+volumes:
+  pgdata:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=256m
