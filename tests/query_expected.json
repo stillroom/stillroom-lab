@@ -1,0 +1,13 @@
+{
+  "derivation": {
+    "cash_received": "payments.csv P001 +400.00 on Aug 10, P002 -100.00 on Aug 11: signed receipts 300.00 through Sep 1. Both join I001 then C001/CLIENT-1. No receipts attributable to C002 or C003.",
+    "overdue_balances": "invoices.csv I001 1000.00 due Aug 15 minus signed receipts 300.00 = observed 700.00 on Sep 1. I002 800.00 has no customer: exclude, never assign by name. C002 and C003 have no attributable invoices: observed 0.00.",
+    "revenue": "Neither invoice (1000.00 or 800.00) proves delivered work or recognition. No numeric expected: abstain.",
+    "pipeline": "CRM O001 2500.00 lacks stage; not proven open/not-won. No numeric expected: abstain.",
+    "caveat": "Observed cash/balances are not complete totals. Payment completeness and conflicting due-date authority remain unresolved. amount must be null."
+  },
+  "cash_received": {"CLIENT-1": "300.00", "CLIENT-2": "0.00", "CLIENT-3": "0.00"},
+  "overdue_balances": {"CLIENT-1": "700.00", "CLIENT-2": "0.00", "CLIENT-3": "0.00"},
+  "revenue": [],
+  "pipeline": []
+}

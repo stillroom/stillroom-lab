@@ -1,0 +1,19 @@
+version: v0.1.0
+ontology_version: v0.1.0
+# Names reference the pinned ontology's metrics and relationship definitions.
+# No SQL or arbitrary question text is accepted from callers.
+queries:
+  revenue:
+    joins: []
+    unavailable: Delivery and recognition evidence are absent.
+  cash_received:
+    joins: [belongs_to, billed_to, applied_to]
+    sql: query_cash.sql
+    caveat: Observed signed receipts only; cash-ledger completeness is not established.
+  pipeline:
+    joins: [belongs_to, offered_to]
+    unavailable: Opportunity stage evidence is absent.
+  overdue_balances:
+    joins: [belongs_to, billed_to, applied_to]
+    sql: query_overdue.sql
+    caveat: Observed billing-date balances only; payment completeness and due-date authority are not established.
