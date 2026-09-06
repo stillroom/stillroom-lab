@@ -1,6 +1,6 @@
 # 03 — Governed query API
 
-Status: open
+Status: complete (29f1250)
 Blocked by: 02
 Executor: Astra (SQL/Decimal correctness, permission checks, tests owned by us)
 

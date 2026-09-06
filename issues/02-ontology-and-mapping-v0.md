@@ -1,6 +1,6 @@
 # 02 — Ontology + mapping v0
 
-Status: open
+Status: complete (1a7f1ab)
 Blocked by: 01
 Executor: Astra (validation logic + tests owned by us)
 

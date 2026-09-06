@@ -1,6 +1,6 @@
 # 01 — Environment + seeded mock sources
 
-Status: open
+Status: complete (fb2a761)
 Blocked by: none
 Executor: Astra (deterministic seed scripts + fixtures owned by us)
 
