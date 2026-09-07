@@ -1,7 +1,7 @@
 """Typed, deterministic governed-query boundary."""
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Literal
 from decimal import Decimal
 
@@ -18,6 +18,7 @@ import yaml
 
 from services.ontology import StrictModel, load_ontology
 from services.query_storage import READ_DSN, QueryAuditWriter
+from services.proof import ProofManifest, SourceEvidence
 
 
 class PermissionContext(StrictModel):
@@ -56,6 +57,7 @@ class QueryResult(StrictModel):
     snapshot_id: UUID
     reason: QueryReason
     rows: list[MetricRow]
+    manifest: ProofManifest
 
 
 class QueryService:
@@ -75,13 +77,42 @@ class QueryService:
         self.approved: dict[str, dict[str, Any]] = {
             f'{self.version}/{name}': definition for name, definition in catalog['queries'].items()}
 
+    def result(self, request: QueryRequest | None, rows: list[MetricRow],
+               sources: list[SourceEvidence], reason: QueryReason, conflicts: list[str],
+               mapping_versions: list[str], *,
+               permission: PermissionContext | None = None) -> QueryResult:
+        snapshot_id = uuid4()
+        reference = request.approved_query if request and request.approved_query in self.approved else None
+        permission = request.permission if request else permission
+        manifest = ProofManifest(
+            source_ids=sorted({s.source_id for s in sources}), retrieved_at=datetime.now(timezone.utc),
+            snapshot_id=snapshot_id, ontology_version=self.version,
+            mapping_versions=mapping_versions,
+            approved_query=reference,
+            metric_definition_ref=(f'ontology/{self.version}.yaml#metrics.{reference.split("/")[1]}'
+                                   if reference else None),
+            permission_context=permission.model_dump() if permission else None,
+            unresolved_conflicts=sorted(set(conflicts) | {c for s in sources for c in s.conflicts}),
+            sources=sources, caveats=[reason.message] + [
+                f'{s.source_id}: no payment record found through {request.as_of if request else "unknown"}. '
+                'Completeness check: not_established; not proof of nonpayment.'
+                for s in sources if s.payment_absence],
+            completeness_check='not_established', as_of=request.as_of if request else None,
+            period_start=request.period_start if request else None)
+        return QueryResult(query_id=uuid4(), snapshot_id=snapshot_id, rows=rows,
+                           reason=reason, manifest=manifest)
+
     def reject_invalid(self, body: object) -> QueryResult:
         """Audit malformed HTTP input without opening a retrieval connection."""
         fields = body if isinstance(body, dict) else {}
         reference = fields.get('approved_query')
         permission = fields.get('permission')
-        result = QueryResult(query_id=uuid4(), snapshot_id=uuid4(), rows=[], reason=QueryReason(
-            code='invalid_request', message='Request must match the governed query schema.'))
+        reason = QueryReason(code='invalid_request', message='Request must match the governed query schema.')
+        try:
+            valid_permission = PermissionContext.model_validate(permission)
+        except ValidationError:
+            valid_permission = None
+        result = self.result(None, [], [], reason, [], [], permission=valid_permission)
         self.audit.append({
             'query_id': result.query_id, 'snapshot_id': result.snapshot_id,
             'approved_query': reference if isinstance(reference, str) else '<invalid>',
@@ -102,6 +133,8 @@ class QueryService:
     def execute(self, request: QueryRequest) -> QueryResult:
         rows: list[MetricRow] = []
         snapshots: list[dict[str, Any]] = []
+        sources: list[SourceEvidence] = []
+        conflicts: list[str] = []
         retrieval_started = False
         reason = QueryReason(code='query_not_allowlisted', message='Use a versioned approved-query reference.')
         if request.approved_query in self.approved:
@@ -137,17 +170,31 @@ class QueryService:
                                 'as_of': request.as_of, 'period_start': request.period_start,
                             }).fetchall()
                             rows = [MetricRow.model_validate(value) for value in values]
+                            proof_query = Path(__file__).with_name('query_scope.sql').read_text()
+                            proof_query += Path(__file__).with_name('query_proof.sql').read_text()
+                            evidence = db.execute(proof_query, {
+                                'snapshots': [s['snapshot_id'] for s in snapshots],
+                                'client_id': request.permission.client_id, 'role': request.permission.role,
+                                'as_of': request.as_of, 'period_start': request.period_start,
+                                'metric': request.approved_query.split('/')[1]}).fetchone()
+                            if evidence is None:
+                                raise ValueError('Proof query must return an evidence envelope')
+                            sources = [SourceEvidence.model_validate(value) for value in evidence['sources']]
+                            conflicts = evidence['conflicts']
                             reason = QueryReason(code='incomplete_evidence', message=definition['caveat'])
                 except (psycopg.Error, ValidationError):
                     rows = []
+                    sources = []
+                    conflicts = []
                     reason = QueryReason(code='query_failed', message='Retrieval failed; no result is available.')
-        result = QueryResult(query_id=uuid4(), snapshot_id=uuid4(), rows=rows, reason=reason)
+        mapping_versions = sorted({f"{s['family']}:{s['mapping_version']}" for s in snapshots})
+        result = self.result(request, rows, sources, reason, conflicts, mapping_versions)
         self.audit.append({
             'query_id': result.query_id, 'snapshot_id': result.snapshot_id,
             'approved_query': request.approved_query, 'permission': request.permission.model_dump(),
             'outcome': reason.code, 'retrieval_started': retrieval_started, 'row_count': len(rows),
             'snapshots': snapshots, 'ontology_version': self.version,
-            'mapping_versions': sorted({f"{s['family']}:{s['mapping_version']}" for s in snapshots}),
+            'mapping_versions': mapping_versions,
             'as_of': request.as_of, 'period_start': request.period_start,
         })
         return result

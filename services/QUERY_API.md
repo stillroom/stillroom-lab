@@ -23,7 +23,7 @@ CLIENT IDs are Account identifiers, not Customer IDs. Role/client checks precede
 opening any retrieval connection. Customer access metadata is also filtered in SQL.
 Names, email contents, support dates, and policy text cannot override these rules.
 
-Responses contain query_id, snapshot_id, structured reason, and rows. Money is
+Responses contain query_id, snapshot_id, structured reason, rows, and a required proof manifest. Money is
 Postgres numeric -> strict Decimal -> JSON decimal string, never a float. Seed
 observations for CLIENT-1 are cash 300.00 and overdue 700.00. CLIENT-2/3 have observed
 0.00. All have amount=null: ledger completeness and billing-date authority have not
@@ -59,6 +59,63 @@ scratch-local values for loopback Postgres only. Do not deploy this app or these
 credentials. Audit persistence failures prevent returning a query result.
 
 Tests: `uv run --frozen pytest tests/test_queries.py tests/test_query_isolation.py`.
+Ticket 04 acceptance: `uv run --frozen pytest tests/test_proof.py`.
 Use the project's Makefile UV_CACHE_DIR/TMPDIR settings. Tests use disposable real
 Postgres schemas and do not regenerate or modify source files. No model calls,
-artifact generation, agent tools, UI, source writes, or ticket-06 benchmark claims.
+agent tools, UI, source writes, or ticket-06 benchmark claims.
+
+## Proof-carrying artifacts (ticket 04)
+
+`services.artifacts.generate(result, Path(...))` accepts a typed `QueryResult` from
+`QueryService.execute`. It revalidates nested types, snapshot identity, source
+coverage, retained source conflicts and row/client context before writing. This is
+an internal Python boundary, not a new HTTP endpoint or an authenticity signature;
+callers must obtain results from the governed service, not a model-authored payload.
+
+Extensions `.xlsx`, `.pptx`, and `.md` select the template. Paths must be inside the
+fixed repository `output-workspace/`. Parent traversal, symlink directories/files,
+and existing destinations (including hard links) fail; no overwrite capability is
+provided. Linux directory-relative opens use O_NOFOLLOW/O_EXCL. Output-workspace
+and repository ancestors are operator-controlled; hostile concurrent directory
+renaming or mount manipulation by the operator is outside this local sandbox.
+
+Every response, including denial, invalid input and failure, has all manifest
+fields. Approved-query and metric references are null for unapproved/malformed
+requests; malformed or absent permission context is null. A separately validated
+permission context survives unrelated request validation errors; this records
+submitted context, not an authorization grant. Empty evidence is explicit, not
+invented provenance. `retrieved_at` is query-envelope creation time in UTC; each
+`sources` entry separately retains ingestion retrieval time and source observation
+date, source snapshot ID, family and mapping/ontology versions. `snapshot_id`
+remains the audited per-call bundle identifier. Manifest sources are permission-
+scoped observations supporting the answer (including support conflicts), not a
+claim that every listed observation contributed to a numeric sum. Audit snapshots
+retain ticket 03's full approved-snapshot inventory unchanged. Manifest
+`mapping_versions` records that selected inventory independently of evidence rows,
+including approved abstentions and failures after snapshot selection. It stays
+empty when no snapshots were selected (including failures before selection),
+without inventing mapping context.
+
+Support is selected by the same authorized Customer scope, with historical Ticket
+identity ambiguity checked before latest-row selection. Unresolved tickets are
+those whose observed status is neither `closed` nor `resolved`; these are source
+observations, not assertions of present-day status. Support dates never change
+billing arithmetic. Conflicting billing/support dates carry both source references.
+Financial/support identity ambiguity and unattributed invoices surface as generic
+conflicts without leaking the unscoped record IDs. Unavailable revenue/pipeline
+metrics retain their explicit abstention, without supporting record retrieval.
+
+Completeness remains `not_established`: no completeness authority exists in v0.
+An invoice with no observed payment through as_of says "no payment record found"
+and "not proof of nonpayment" alongside that status. This check ignores a cash
+period's lower bound, so a receipt outside the requested period is not falsely
+called missing. Confirmed monetary amounts remain null.
+
+The workbook has Results, Tickets, Sources and Manifest sheets; the complete JSON
+manifest is chunked across Manifest column A to avoid Excel cell truncation. Money
+is exact Decimal text, deliberately not Excel numeric cells or formulas. Oversized
+source cells fail instead of silently truncating. Retrieved text is forced to
+string cells, never executable formulas. The deck has populated slides and the
+full JSON manifest in every slide's notes. The Markdown briefing has inline source
+footnotes and a fenced JSON manifest. Artifacts do not perform arithmetic, retrieve
+sources, send content, or change business records.

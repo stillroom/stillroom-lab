@@ -1,7 +1,8 @@
 # 04 — Proof-carrying answers + artifact generation
 
-Status: open
-Blocked by: 03
+Status: complete
+Dependency: 03 (complete)
+Validation: [04-validation.md](04-validation.md) — 66 tests passed; typecheck clean; independent follow-up review passed.
 Executor: Astra (manifest schema + template code owned by us)
 
 ## Goal
