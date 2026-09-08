@@ -1,6 +1,7 @@
 # 05 — Agent + read-only UI
 
-Status: open
+Status: complete — live model path, full gates and independent continuation review passed; commit approved by Adam 2026-09-08
+Validation: [05-validation.md](05-validation.md); [continuation review](05-continuation-review.json); [earlier review](05-review.json)
 Blocked by: 03 (can parallel with 04)
 Executor: Astra
 

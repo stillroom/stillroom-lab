@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "No findings. agent/runner.py now validates prompt_tokens and completion_tokens from the raw HTTP JSON before SDK parsing and before reject_invalid, execute, or artifact generation. The strict type(count) is int check rejects booleans, strings, floats, negatives, and values above PostgreSQL integer range, while preserving valid 0..2147483647 integers unchanged for both rejection auditing and execution. The raw-response parse reuses the same response and does not issue a second SDK/network request. tests/test_agent.py covers both usage fields against all six malformed values and prevents either query execution or rejection auditing; existing tests cover exact normal usage propagation and one request. services/query_schema.sql remains compatible with the validated range. A non-DB OpenAI 3.8.0 MockTransport probe passed all 12 invalid cases, valid 0/max execution propagation, valid rejection-audit propagation, and exactly one mock request per answer. Mypy and git diff --check passed. No live inference or database tests were run, and no delta-introduced defect was found."
+}

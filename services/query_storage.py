@@ -28,7 +28,7 @@ class QueryAuditWriter:
         self.schema = schema
 
     def append(self, entry: dict[str, Any]) -> None:
-        payload = {**entry}
+        payload = {'input_tokens': 0, 'output_tokens': 0, **entry}
         for name in ('permission', 'snapshots', 'mapping_versions'):
             payload[name] = Jsonb(payload[name])
         with psycopg.connect(AUDIT_DSN) as db:
@@ -38,4 +38,5 @@ class QueryAuditWriter:
                  snapshot_id,snapshots,ontology_version,mapping_versions,as_of,period_start,input_tokens,output_tokens)
                 VALUES (%(query_id)s,%(approved_query)s,%(permission)s,%(outcome)s,
                  %(retrieval_started)s,%(row_count)s,%(snapshot_id)s,%(snapshots)s,
-                 %(ontology_version)s,%(mapping_versions)s,%(as_of)s,%(period_start)s,0,0)""", payload)
+                 %(ontology_version)s,%(mapping_versions)s,%(as_of)s,%(period_start)s,
+                 %(input_tokens)s,%(output_tokens)s)""", payload)

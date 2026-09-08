@@ -102,7 +102,8 @@ class QueryService:
         return QueryResult(query_id=uuid4(), snapshot_id=snapshot_id, rows=rows,
                            reason=reason, manifest=manifest)
 
-    def reject_invalid(self, body: object) -> QueryResult:
+    def reject_invalid(self, body: object, *, input_tokens: int = 0,
+                       output_tokens: int = 0) -> QueryResult:
         """Audit malformed HTTP input without opening a retrieval connection."""
         fields = body if isinstance(body, dict) else {}
         reference = fields.get('approved_query')
@@ -120,6 +121,7 @@ class QueryService:
             'outcome': result.reason.code, 'retrieval_started': False, 'row_count': 0,
             'snapshots': [], 'ontology_version': self.version, 'mapping_versions': [],
             'as_of': None, 'period_start': None,
+            'input_tokens': input_tokens, 'output_tokens': output_tokens,
         })
         return result
 
@@ -130,7 +132,8 @@ class QueryService:
             db.execute(sql.SQL('SET LOCAL search_path TO {}').format(sql.Identifier(self.schema)))
             yield db
 
-    def execute(self, request: QueryRequest) -> QueryResult:
+    def execute(self, request: QueryRequest, *, input_tokens: int = 0,
+                output_tokens: int = 0) -> QueryResult:
         rows: list[MetricRow] = []
         snapshots: list[dict[str, Any]] = []
         sources: list[SourceEvidence] = []
@@ -196,5 +199,6 @@ class QueryService:
             'snapshots': snapshots, 'ontology_version': self.version,
             'mapping_versions': mapping_versions,
             'as_of': request.as_of, 'period_start': request.period_start,
+            'input_tokens': input_tokens, 'output_tokens': output_tokens,
         })
         return result

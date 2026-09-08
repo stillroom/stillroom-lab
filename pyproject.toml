@@ -10,6 +10,8 @@ dependencies = [
     "psycopg[binary]==3.2.10",
     "openpyxl==3.1.5",
     "python-pptx==1.0.2",
+    "openai==3.8.0",
+    "streamlit==1.63.0",
 ]
 
 [dependency-groups]
@@ -30,4 +32,4 @@ addopts = "--basetemp=.pytest-tmp"
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["sources", "services", "tests"]
+files = ["sources", "services", "agent", "ui", "tests"]

@@ -1,4 +1,4 @@
-# Stillroom Lab v0 — tickets 01–04
+# Stillroom Lab v0 — tickets 01–05
 
 `spec.md` is the source of truth. Ticket 01 provides the local Postgres sandbox
 and deterministic fictional sources. Ticket 02 adds the pinned business ontology,
@@ -81,4 +81,7 @@ They never rebuild the actual `sources/generated/` ingestion inputs. Policy test
 read actual SQLite/CSV/JSON/text records and check documented traps.
 
 The suite covers permission enforcement, governed queries and proof-carrying
-artifacts. It does not implement the ticket-05 agent/UI or ticket-06 benchmark.
+artifacts, the typed agent, and read-only Streamlit UI. The ticket-06 benchmark
+remains separate; no live-model quality or comparative benchmark claim is made.
+See [agent/README.md](agent/README.md) for explicit inference opt-in and
+[ui/README.md](ui/README.md) for local startup and the read-only boundary.
