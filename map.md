@@ -22,8 +22,7 @@ spec: spec.md
 
 ## Fog
 
-- Whether Astra account access actually works from this machine (unverified; gated).
-- Whether `qwen2.5:4b` tool-calling/JSON reliability clears the bar (stage-2 benchmark
-  contestant; cloud-first until measured).
+- Which explicitly selected Ollama Cloud model is reliable enough across the fixed
+  Ticket 06 cases; measured rather than assumed.
 - Whether the governed-query layer stays a thin module under load (second-pass lab
   question, deferred).

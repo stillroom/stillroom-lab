@@ -29,9 +29,9 @@ answer modes on identical inputs.
    c. governed semantic querying (the lab's path).
 4. Metrics per the doc: numeric correctness, joins, source coverage, appropriate
    abstention, leakage, artifact consistency, latency, source-write prevention.
-5. Model benchmark piggyback: tool-calling + JSON reliability measured per provider
-   (cloud candidates now; `qwen2.5:4b` joins as a contestant when it arrives).
-   Token usage read from the audit table (per-call logging from ticket 03).
+5. Model benchmark piggyback: tool-calling + JSON reliability measured for the
+   explicitly selected Ollama Cloud model. Token usage is read from the audit table
+   (per-call logging from ticket 03). No local-model contestant is planned for v0.
 6. Results published as a table in `benchmark/RESULTS.md`; no comparative
    superiority claim beyond what the table shows.
 

@@ -41,7 +41,7 @@ benchmark set — not asserted.
 | D4 | Executor split | Astra executes build tickets ($10/$50 per M tokens — deterministic core must carry bulk work); deterministic core (SQL/Decimal, mapping validation, permission checks) + tests stay owned by us; every ticket gets /code-review before done. **Astra not engaged until Adam says implement.** |
 | D5 | Benchmark set confirmed | Case #1: overdue invoices + unresolved tickets → spreadsheet + briefing with source references. First-class case: multi-client isolation. Plus the messiness battery: duplicate names, missing IDs, partial payments, refunds, conflicting dates, stale snapshots, ambiguous metric terms, access restrictions, injected instructions in emails. |
 | D6 | Front end deferrable | Streamlit first (fast prototype), Dash if client-facing polish is needed later. Same data layer either way; swap cost low. |
-| D7 | Model strategy is a config switch | One OpenAI-compatible client covers OpenAI API / Ollama Cloud (127.0.0.1:11434/v1) / local Ollama models. Cloud-first iteration; `qwen2.5:4b` joins later as narration tier + benchmark contestant after tool-calling/JSON reliability is measured. |
+| D7 | Model strategy is a config switch | One OpenAI-compatible client uses explicitly selected Ollama Cloud models through `127.0.0.1:11434/v1`. Model changes remain environment-variable configuration; no local-model contestant is planned for v0. |
 | D8 | Mock business mirrors Stillroom | Lab sources model a one-person consultancy; ontology/mapping/metric/permission artefacts written once for reuse at stage 2 (Stillroom = client #1). Vault-shaped document mocks so mapping contracts transfer to real Obsidian ingestion unchanged. |
 
 ## Architecture (one sentence per layer)

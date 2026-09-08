@@ -35,6 +35,21 @@ has no code deliverable; it is satisfied by following the protocol.
    the trust-critical cores — and at the end.
 7. Token usage logged per ticket for the cost ledger.
 
+## Fallback rule (codified 2026-09-06, Adam's decision)
+
+Primary executor for tickets 01–05 is Astra. Degradation paths, in order:
+
+- Session cannot start → that IS the verification failing; stop and report to Adam.
+  Resuming is Adam's call: the fallback is **Sol as primary coder with Astra on a
+  full adversarial `/code-review` pass after** — never silent continuation on
+  another model, and never Terra as the substitute.
+- Mid-run model fallback (e.g. window fell back to GPT-5.6 Terra, as seen on an
+  earlier ticket) → stop at the degraded segment, report it; Adam decides whether
+  that segment is redone by Astra or Sol. On trust-critical code (tickets 03/04)
+  do not continue a degraded run without Adam's explicit go.
+- Sol Review remains the independent durable review (Protocol §6 checkpoints)
+  regardless of which model executed.
+
 ## Non-goals
 
 - No Astra involvement in ticket 06. No source-system writes. No commits without

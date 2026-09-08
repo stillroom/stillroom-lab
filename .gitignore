@@ -9,3 +9,9 @@ __pycache__/
 sources/generated/
 output-workspace/*
 !output-workspace/README.md
+.astra-reference/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
